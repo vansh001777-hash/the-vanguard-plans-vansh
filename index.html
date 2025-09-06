@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Vanguard Plans - Vansh</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #111;
+      color: #eee;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #00ff99;
+    }
+    .plan-box {
+      background: #1a1a1a;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,255,153,0.3);
+    }
+    button {
+      background: #00ff99;
+      color: #000;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #00cc77;
+    }
+  </style>
+</head>
+<body>
+  <h1>⚔️ The Vanguard Plans ⚔️</h1>
+  <h2>By Vansh</h2>
+
+  <div style="text-align:center;">
+    <button onclick="showToday()">📅 Show Today’s Plan</button>
+    <button onclick="showPast()">📖 Show Past Plans</button>
+  </div>
+
+  <div id="content"></div>
+
+  <script>
+    // Plans data
+    const plans = {
+      "2025-09-07": [
+        "📱 Screen Time Screenshot – Apna screen time share karo.",
+        "💪 Workout – Minimum 15 minute bodyweight exercise + proof.",
+        "🧠 Mindset – Ek sentence likho: tumhara 'WHY' kya hai?",
+        "💰 Finance – SIP/Gold investment explore karo ya ₹100 SIP start karo."
+      ],
+      "2025-09-08": [
+        "📱 Screen time ka kal se comparison share karo.",
+        "💪 Workout – 20 pushups + 20 squats + plank (2 min).",
+        "🧠 Mindset – Ek distraction likho jise avoid karoge.",
+        "📚 Learning – 30 min Python basics: variables & print()."
+      ],
+      "2025-09-09": [
+        "📱 Screen time aur improvement share karo.",
+        "💪 Workout – Burpees 10x + 25 pushups + squats 30.",
+        "📚 English – Ek paragraph English me likho (apne din ke baare me).",
+        "💰 Finance – Mutual funds ke 2 options ka screenshot share karo."
+      ]
+    };
+
+    // Show today’s plan
+    function showToday() {
+      const today = new Date().toISOString().split("T")[0];
+      let content = "<div class='plan-box'><h2>Today’s Plan</h2>";
+      if (plans[today]) {
+        plans[today].forEach(task => {
+          content += `<p>✔️ ${task}</p>`;
+        });
+      } else {
+        content += "<p>No plan found for today.</p>";
+      }
+      content += "</div>";
+      document.getElementById("content").innerHTML = content;
+    }
+
+    // Show past plans
+    function showPast() {
+      let content = "<h2>Past Plans</h2>";
+      for (let date in plans) {
+        content += `<div class='plan-box'><h3>${date}</h3>`;
+        plans[date].forEach(task => {
+          content += `<p>✔️ ${task}</p>`;
+        });
+        content += "</div>";
+      }
+      document.getElementById("content").innerHTML = content;
+    }
+  </script>
+</body>
+</html>
