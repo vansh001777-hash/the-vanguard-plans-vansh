@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Vanguard Ultimate Planner — Vansh</title>
+<title>The Vanguard Ultimate 60-Day Planner — Vansh</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:#0b0b0c; color:#fff; }
@@ -29,12 +28,10 @@ footer { text-align:center; padding:15px; background:#111; color:#ffd000; }
 </style>
 </head>
 <body>
-<header>Welcome, Vansh — The Vanguard Ultimate Planner</header>
+<header>Welcome, Vansh — The Vanguard Ultimate 60-Day Planner</header>
 <div id="day-counter"></div>
 <main>
-
 <div id="quote"></div>
-
 <!-- Categories -->
 <div class="category" data-category="Physical">
   <h2>Physical <span class="xp">XP: <span class="xp-val">0</span></span></h2>
@@ -44,7 +41,6 @@ footer { text-align:center; padding:15px; background:#111; color:#ffd000; }
   <div class="streak">Streak: <span class="streak-val">0</span> days</div>
   <div class="badges" id="Physical-badges"></div>
 </div>
-
 <div class="category" data-category="Mental">
   <h2>Mental <span class="xp">XP: <span class="xp-val">0</span></span></h2>
   <div class="tasks"></div>
@@ -53,7 +49,6 @@ footer { text-align:center; padding:15px; background:#111; color:#ffd000; }
   <div class="streak">Streak: <span class="streak-val">0</span> days</div>
   <div class="badges" id="Mental-badges"></div>
 </div>
-
 <div class="category" data-category="Wealth">
   <h2>Wealth <span class="xp">XP: <span class="xp-val">0</span></span></h2>
   <div class="tasks"></div>
@@ -62,7 +57,6 @@ footer { text-align:center; padding:15px; background:#111; color:#ffd000; }
   <div class="streak">Streak: <span class="streak-val">0</span> days</div>
   <div class="badges" id="Wealth-badges"></div>
 </div>
-
 <div class="category" data-category="Personal">
   <h2>Personal <span class="xp">XP: <span class="xp-val">0</span></span></h2>
   <div class="tasks"></div>
@@ -75,183 +69,88 @@ footer { text-align:center; padding:15px; background:#111; color:#ffd000; }
     <button onclick="addPersonalTask()">Add</button>
   </div>
 </div>
-
 <div style="text-align:center; margin-top:20px; font-size:1.2em; color:#ffd000;">
   Total Daily Points: <span id="total-points">0</span> | Total XP: <span id="total-xp">0</span>
 </div>
-
-<!-- Charts -->
 <canvas id="weeklyChart" width="400" height="150"></canvas>
 <canvas id="categoryChart" width="400" height="150"></canvas>
-
 <div class="confetti" id="confetti-container"></div>
-
 </main>
 <footer>© The Vanguard 2025 — Ultimate Elite Planner</footer>
-
 <script>
-// ----- Core Data -----
 const taskData = {
-  "Physical":[{task:"Push-ups / Bench Press", points:5},{task:"Squats / Lunges", points:5},{task:"Plank / Core", points:3}],
-  "Mental":[{task:"Study AI / Coding 1 hr", points:5},{task:"Solve 5 problems", points:3}],
-  "Wealth":[{task:"Check investments", points:3},{task:"Track personal project", points:3}],
-  "Personal":[{task:"Journaling 3 min", points:1},{task:"Plan next day", points:3}]
+  "Physical":[
+    {task:"Push-ups / Bench Press (Progressive)", points:5},
+    {task:"Squats / Lunges (Progressive)", points:5},
+    {task:"Plank / Core hold", points:3},
+    {task:"Mobility & Stretching", points:2},
+    {task:"Chest + Back Isolation (Bro Split)", points:4},
+    {task:"HIIT / Cardio 15 min", points:3}
+  ],
+  "Mental":[
+    {task:"Study AI / Coding 1 hr", points:5},
+    {task:"Solve 5 problems", points:3},
+    {task:"Language Drill: English speaking / mirror practice", points:4},
+    {task:"Memory / Brain exercises", points:3},
+    {task:"Read 3 pages of book / article", points:2}
+  ],
+  "Wealth":[
+    {task:"Check investments / finance journal", points:3},
+    {task:"Track personal project / micro-business", points:3},
+    {task:"Learn 1 financial concept", points:2},
+    {task:"Practice mock trading / simulation", points:3},
+    {task:"Watch 10 min financial video", points:2}
+  ],
+  "Personal":[
+    {task:"Journaling 3 min", points:1},
+    {task:"Plan next day", points:3},
+    {task:"Limit social media & endless scrolling", points:2},
+    {task:"Confidence / Public Speaking Drill", points:4},
+    {task:"Morning Affirmation 30s", points:2}
+  ]
 };
-
 const quotes = [
   "Discipline is the bridge between goals and accomplishment.",
-  "What you do today can improve all your tomorrows.",
   "Small daily improvements lead to stunning results.",
   "Focus on being productive, not busy.",
   "Your future is created by what you do today, not tomorrow."
 ];
-
-// ----- Planner Dates -----
-const startDate = new Date("2025-09-07"); // Day 0
-function getCurrentDay() {
-  const now = new Date();
-  const diffTime = now - startDate;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
+const startDate = new Date("2025-09-07");
+function getCurrentDay(){
+  const now=new Date();
+  const diff=Math.floor((now-startDate)/(1000*60*60*24));
+  return diff;
 }
-
-// Show current day
-document.getElementById("day-counter").innerText = `Day ${getCurrentDay()} — Vansh’s Daily Planner`;
-
-// Random quote
-document.getElementById("quote").innerText = quotes[Math.floor(Math.random()*quotes.length)];
-
-// ----- Load Tasks -----
+document.getElementById("day-counter").innerText=`Day ${getCurrentDay()} — Vansh’s Daily Planner`;
 function loadTasks(){
-  const currentDay = getCurrentDay();
-
+  const currentDay=getCurrentDay();
   document.querySelectorAll(".category").forEach(catDiv=>{
-    const catName = catDiv.dataset.category;
-    const tasksDiv = catDiv.querySelector(".tasks");
+    const catName=catDiv.dataset.category;
+    const tasksDiv=catDiv.querySelector(".tasks");
     tasksDiv.innerHTML="";
-    const tasks = taskData[catName]||[];
-
-    tasks.forEach((t,i)=>{
-      if(catName!=="Personal" && i > currentDay) return; // Day restriction
+    (taskData[catName]||[]).forEach((t,i)=>{
+      if(i>currentDay+5) return;
       const taskElem=document.createElement("div");
       taskElem.className="task";
-      taskElem.innerHTML=`<input type="checkbox" id="${catName}-${i}"><span>${t.task}</span><button onclick="addReason('${catName}',${i})">Reason ❌</button>`;
-      const saved = JSON.parse(localStorage.getItem(`${catName}-${i}`));
-      if(saved?.completed) taskElem.querySelector("input").checked=true;
+      taskElem.innerHTML=`<input type=\"checkbox\" id=\"${catName}-${i}\"><span>${t.task}</span><button onclick=\"addReason('${catName}',${i})\">Reason</button>`;
       tasksDiv.appendChild(taskElem);
     });
-
-    // Load Vansh personal tasks
-    if(catName==="Personal"){
-      const personalSaved = JSON.parse(localStorage.getItem("Vansh-PersonalTasks"))||[];
-      personalSaved.forEach(task=>addPersonalTask(task,true));
-    }
-
-    updateProgress(catDiv);
   });
 }
-
-// ----- Add Personal Task -----
-function addPersonalTask(taskText,isLoad=false){
-  if(!taskText) taskText=document.querySelector(".category[data-category='Personal'] input").value;
-  if(!taskText) return;
-  const tasksDiv=document.querySelector(".category[data-category='Personal'] .tasks");
-  const taskElem=document.createElement("div");
-  taskElem.className="task";
-  const index=tasksDiv.children.length;
-  taskElem.innerHTML=`<input type="checkbox" id="Personal-${index}"><span>${taskText} — Vansh</span><button onclick="addReason('Personal',${index})">Reason ❌</button>`;
+function addPersonalTask(){
+  const input=document.querySelector('.add-task input');
+  const val=input.value.trim();
+  if(!val) return;
+  const tasksDiv=document.querySelector('.category[data-category="Personal"] .tasks');
+  const idx=tasksDiv.children.length;
+  const taskElem=document.createElement('div');
+  taskElem.className='task';
+  taskElem.innerHTML=`<input type=\"checkbox\"><span>${val}</span><button onclick=\"addReason('Personal',${idx})\">Reason</button>`;
   tasksDiv.appendChild(taskElem);
-  if(!isLoad){
-    const saved=JSON.parse(localStorage.getItem("Vansh-PersonalTasks"))||[];
-    saved.push(taskText);
-    localStorage.setItem("Vansh-PersonalTasks",JSON.stringify(saved));
-    document.querySelector(".category[data-category='Personal'] input").value="";
-  }
-  updateProgress(document.querySelector(".category[data-category='Personal']"));
+  input.value='';
 }
-
-// ----- Checkbox Save -----
-document.addEventListener("change",e=>{
-  if(e.target.type==="checkbox"){
-    const id=e.target.id;
-    const completed=e.target.checked;
-    localStorage.setItem(id, JSON.stringify({completed}));
-    updateAllProgress();
-  }
-});
-
-// ----- Add Reason -----
-function addReason(category,index){
-  const reason = prompt("Why wasn't this task completed?");
-  if(reason){
-    localStorage.setItem(`${category}-${index}-reason`,reason);
-    alert("Reason saved!");
-  }
+function addReason(cat,idx){
+  const reason=prompt('Why not completed?');
+  if(reason) localStorage.setItem(`${cat}-reason-${idx}`,reason);
 }
-
-// ----- Update Progress -----
-function updateProgress(catDiv){
-  const tasks=catDiv.querySelectorAll(".task input[type='checkbox']");
-  let completed=0, points=0;
-  tasks.forEach((t,i)=>{
-    if(t.checked){
-      completed++;
-      const catName = catDiv.dataset.category;
-      const taskPoints = taskData[catName]?.[i]?.points || 1;
-      points += taskPoints;
-    }
-  });
-  const total=tasks.length || 1;
-  const percent = Math.floor((completed/total)*100);
-  catDiv.querySelector(".progress-bar").style.width = percent+"%";
-  catDiv.querySelector(".points-val").innerText = points;
-  catDiv.querySelector(".xp-val").innerText = points;
-  updateAllTotals();
-}
-
-function updateAllProgress(){
-  document.querySelectorAll(".category").forEach(updateProgress);
-}
-
-function updateAllTotals(){
-  let totalPoints=0, totalXP=0;
-  document.querySelectorAll(".category").forEach(cat=>{
-    totalPoints+=parseInt(cat.querySelector(".points-val").innerText) || 0;
-    totalXP+=parseInt(cat.querySelector(".xp-val").innerText) || 0;
-  });
-  document.getElementById("total-points").innerText=totalPoints;
-  document.getElementById("total-xp").innerText=totalXP;
-}
-
-// ----- Initialize -----
-loadTasks();
-
-// ----- Charts -----
-const weeklyChartCtx = document.getElementById('weeklyChart').getContext('2d');
-new Chart(weeklyChartCtx, {
-  type: 'line',
-  data: {
-    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-    datasets: [{
-      label: 'Points This Week',
-      data: [0,0,0,0,0,0,0],
-      borderColor: '#ffd000',
-      backgroundColor: '#ffd00033',
-      tension:0.3
-    }]
-  },
-  options:{responsive:true, plugins:{legend:{labels:{color:'#ffd000'}}}, scales:{x:{ticks:{color:'#ffd000'}},y:{ticks:{color:'#ffd000'}}}}
-});
-
-const categoryChartCtx = document.getElementById('categoryChart').getContext('2d');
-new Chart(categoryChartCtx,{
-  type:'bar',
-  data:{
-    labels:['Physical','Mental','Wealth','Personal'],
-    datasets:[{label:'XP',data:[0,0,0,0],backgroundColor:'#ffd000'}]
-  },
-  options:{responsive:true, plugins:{legend:{labels:{color:'#ffd000'}}}, scales:{x:{ticks:{color:'#ffd000'}},y:{ticks:{color:'#ffd000'}}}}
-});
-</script>
-</body>
-</html>
+function loadQuote(){
