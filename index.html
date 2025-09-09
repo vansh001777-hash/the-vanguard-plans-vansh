@@ -1,150 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>The Vanguard — 60 Day Planner</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Vanguard Ultimate Planner — Final Version</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  :root {
-    --bg: #0b0b0c;
-    --card: #0f1113;
-    --accent: #ffd000;
-    --muted: #bfc6c9;
-    --accent2: #00e6c3;
-  }
-  body {
-    margin: 0;
-    font-family: Inter, Arial, Helvetica, sans-serif;
-    background: linear-gradient(180deg, #050506 0%, #0b0b0c 100%);
-    color: #e6eef1;
-  }
-  .container {
-    max-width: 980px;
-    margin: 20px auto;
-    padding: 18px;
-  }
-  header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 25px;
-  }
-  header h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .day-selector {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  .day-selector select {
-    padding: 8px 12px;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: none;
-    background: var(--card);
-    color: var(--accent);
-  }
-  .card {
-    background: var(--card);
-    padding: 18px;
-    border-radius: 14px;
-    margin-bottom: 18px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.5);
-  }
-  .task {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  .task input {
-    margin-right: 10px;
-    transform: scale(1.2);
-  }
-  .task label {
-    font-size: 1rem;
-    color: var(--muted);
-  }
+body { margin:0; font-family:Arial,sans-serif; background:#0b0b0c; color:#fff; }
+header { background:#111; text-align:center; padding:20px; font-size:2em; font-weight:bold; color:#ffd000; }
+main { padding:20px; max-width:1200px; margin:auto; }
+.category { background:#1a1a1c; margin-bottom:20px; border-radius:10px; padding:15px; }
+.category h2 { margin-top:0; color:#ffd000; display:flex; justify-content:space-between; align-items:center; }
+.task { display:flex; align-items:center; justify-content:space-between; background:#0f1113; margin:8px 0; padding:10px; border-radius:8px; }
+.task input[type="checkbox"] { transform:scale(1.3); }
+.task span { margin-left:10px; flex:1; }
+.task button { margin-left:10px; background:#ffd000; border:none; border-radius:5px; padding:5px 10px; color:#000; cursor:pointer; }
+.progress-container { background:#0f1113; border-radius:10px; overflow:hidden; margin-top:10px; }
+.progress-bar { height:15px; background:#ffd000; width:0%; }
+.add-task { display:flex; margin-top:10px; }
+.add-task input { flex:1; padding:5px; border-radius:5px; border:none; }
+.add-task button { padding:5px 10px; margin-left:5px; border:none; border-radius:5px; background:#ffd000; color:#000; cursor:pointer; }
+.points, .streak, .badges, .xp { margin-top:5px; font-size:0.9em; color:#bfc6c9; }
+canvas { background:#1a1a1c; border-radius:10px; margin-top:20px; }
+#quote { text-align:center; margin:20px 0; font-style:italic; color:#ffd000; }
+footer { text-align:center; padding:15px; background:#111; color:#ffd000; }
+
+.confetti {
+  position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999;
+}
 </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>The Vanguard — 60 Day Planner</h1>
-    </header>
-    <div class="day-selector">
-      <label for="daySelect">Select Day: </label>
-      <select id="daySelect"></select>
-    </div>
-    <div id="plan"></div>
+<header>The Vanguard Ultimate Planner</header>
+<main>
+
+<div id="quote"></div>
+
+<!-- Categories -->
+<div class="category" data-category="Physical">
+  <h2>Physical <span class="xp">XP: <span class="xp-val">0</span></span></h2>
+  <div class="tasks"></div>
+  <div class="progress-container"><div class="progress-bar"></div></div>
+  <div class="points">Points: <span class="points-val">0</span></div>
+  <div class="streak">Streak: <span class="streak-val">0</span> days</div>
+  <div class="badges" id="Physical-badges"></div>
+</div>
+
+<div class="category" data-category="Mental">
+  <h2>Mental <span class="xp">XP: <span class="xp-val">0</span></span></h2>
+  <div class="tasks"></div>
+  <div class="progress-container"><div class="progress-bar"></div></div>
+  <div class="points">Points: <span class="points-val">0</span></div>
+  <div class="streak">Streak: <span class="streak-val">0</span> days</div>
+  <div class="badges" id="Mental-badges"></div>
+</div>
+
+<div class="category" data-category="Wealth">
+  <h2>Wealth <span class="xp">XP: <span class="xp-val">0</span></span></h2>
+  <div class="tasks"></div>
+  <div class="progress-container"><div class="progress-bar"></div></div>
+  <div class="points">Points: <span class="points-val">0</span></div>
+  <div class="streak">Streak: <span class="streak-val">0</span> days</div>
+  <div class="badges" id="Wealth-badges"></div>
+</div>
+
+<div class="category" data-category="Personal">
+  <h2>Personal <span class="xp">XP: <span class="xp-val">0</span></span></h2>
+  <div class="tasks"></div>
+  <div class="progress-container"><div class="progress-bar"></div></div>
+  <div class="points">Points: <span class="points-val">0</span></div>
+  <div class="streak">Streak: <span class="streak-val">0</span> days</div>
+  <div class="badges" id="Personal-badges"></div>
+  <div class="add-task">
+    <input type="text" placeholder="Add personal task">
+    <button onclick="addPersonalTask()">Add</button>
   </div>
+</div>
+
+<div style="text-align:center; margin-top:20px; font-size:1.2em; color:#ffd000;">
+  Total Daily Points: <span id="total-points">0</span> | Total XP: <span id="total-xp">0</span>
+</div>
+
+<!-- Charts -->
+<canvas id="weeklyChart" width="400" height="150"></canvas>
+<canvas id="categoryChart" width="400" height="150"></canvas>
+
+<div class="confetti" id="confetti-container"></div>
+
+</main>
+<footer>© The Vanguard 2025 — Ultimate Elite Planner</footer>
 
 <script>
-  // Fixed start date for everyone
-  const startDate = new Date("2025-09-07"); // Day 0
-  const totalDays = 60;
 
-  // Pre-fill 60 days with placeholder tasks
-  const dailyPlans = {};
-  for (let i = 0; i <= totalDays; i++) {
-    dailyPlans[i] = [
-      `Main Task for Day ${i}`,
-      `Workout/Study Goal for Day ${i}`,
-      `Reflection/Journal for Day ${i}`
-    ];
-  }
+// ----- Core Data -----
+const taskData = {
+  "Physical":[{task:"Push-ups / Bench Press", points:5},{task:"Squats / Lunges", points:5},{task:"Plank / Core", points:3}],
+  "Mental":[{task:"Study AI / Coding 1 hr", points:5},{task:"Solve 5 problems", points:3}],
+  "Wealth":[{task:"Check investments", points:3},{task:"Track personal project", points:3}],
+  "Personal":[{task:"Journaling 3 min", points:1},{task:"Plan next day", points:3}]
+};
 
-  // Calculate current day based on today's date
-  function getCurrentDay() {
-    const today = new Date();
-    const diff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
-    return diff >= 0 ? diff : 0;
-  }
+const quotes = [
+  "Discipline is the bridge between goals and accomplishment.",
+  "What you do today can improve all your tomorrows.",
+  "Small daily improvements lead to stunning results.",
+  "Focus on being productive, not busy.",
+  "Your future is created by what you do today, not tomorrow."
+];
 
-  // Populate dropdown
-  const daySelect = document.getElementById("daySelect");
-  const currentDay = getCurrentDay();
-  for (let i = 0; i <= totalDays; i++) {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = `Day ${i}`;
-    if (i === currentDay) opt.selected = true;
-    if (i > currentDay) opt.disabled = true; // Lock future days
-    daySelect.appendChild(opt);
-  }
-
-  // Render plan for selected day
-  function renderPlan(day) {
-    const planDiv = document.getElementById("plan");
-    planDiv.innerHTML = "";
-    const tasks = dailyPlans[day] || ["No tasks added yet."];
-    tasks.forEach((task, idx) => {
-      const card = document.createElement("div");
-      card.className = "card task";
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.id = `task-${day}-${idx}`;
-      checkbox.checked = localStorage.getItem(checkbox.id) === "true";
-      checkbox.onchange = () => {
-        localStorage.setItem(checkbox.id, checkbox.checked);
-      };
-      const label = document.createElement("label");
-      label.setAttribute("for", checkbox.id);
-      label.textContent = task;
-      card.appendChild(checkbox);
-      card.appendChild(label);
-      planDiv.appendChild(card);
+// ----- Load Tasks -----
+function loadTasks(){
+  document.querySelectorAll(".category").forEach(catDiv=>{
+    const catName = catDiv.dataset.category;
+    const tasksDiv = catDiv.querySelector(".tasks");
+    tasksDiv.innerHTML="";
+    const tasks = taskData[catName]||[];
+    tasks.forEach((t,i)=>{
+      const taskElem=document.createElement("div");
+      taskElem.className="task";
+      taskElem.innerHTML=`<input type="checkbox" id="${catName}-${i}"><span>${t.task}</span><button onclick="addReason('${catName}',${i})">Reason ❌</button>`;
+      const saved = JSON.parse(localStorage.getItem(`${catName}-${i}`));
+      if(saved?.completed) taskElem.querySelector("input").checked=true;
+      tasksDiv.appendChild(taskElem);
     });
-  }
-
-  // Initial render
-  renderPlan(currentDay);
-
-  // Handle day change
-  daySelect.addEventListener("change", e => {
-    renderPlan(parseInt(e.target.value));
+    // Load personal tasks
+    if(catName==="Personal"){
+      const personalSaved = JSON.parse(localStorage.getItem("PersonalTasks"))||[];
+      personalSaved.forEach(task=>addPersonalTask(task,true));
+    }
+    updateProgress(catDiv);
   });
-</script>
-</body>
-</html>
+}
+
+// ----- Add Personal Task -----
+function addPersonalTask(taskText,isLoad=false){
+  if(!taskText) taskText=document.querySelector(".category[data-category='Personal'] input").value;
+  if(!taskText) return;
+  const tasksDiv=document.querySelector(".category[data-category='Personal'] .tasks");
+  const taskElem=document.createElement("div");
+  taskElem.className="task";
+  const index=tasksDiv.children.length;
+  taskElem.innerHTML=`<input type="checkbox" id="Personal-${index}"><span>${taskText}</span><button onclick="addReason('Personal',${index})">Reason ❌</button>`;
+  tasksDiv.appendChild(taskElem);
+  if(!isLoad){
+    const saved=JSON.parse(localStorage.getItem("PersonalTasks"))||[];
+    saved.push(taskText);
+    localStorage.setItem("PersonalTasks",JSON.stringify(saved));
+    document.querySelector(".category[data-category='Personal'] input").value="";
+  }
+  updateProgress(document.querySelector(".category[data-category='Personal']"));
+}
+
+// ----- Add Reason -----
+function addReason(category,index){
+  const reason=prompt("Why wasn't this task completed?");
+  if(!reason) return;
+  localStorage.setItem(`${category}-${index}-reason`,reason);
+}
+
+// ----- Checkbox Listener -----
+document.addEventListener("change",e=>{
+  if(e.target.type==="checkbox"){
+    const [cat,index]=e.target.id.split("-");
+    localStorage.setItem(`${cat}-${index}`,JSON.stringify({completed:e.target.checked}));
+    const catDiv=document.querySelector(`.category[data-category='${cat}']`);
+    updateProgress(catDiv);
+    updateCharts();
+    checkEliteRewards(catDiv);
+  }
+});
+
+// ----- Update Progress -----
+function updateProgress(catDiv){
+  const catName=catDiv.dataset.category;
+  const tasks=catDiv.querySelectorAll(".task input");
+  let completed=0, points=0;
+  tasks.forEach((t,i)=>{
+    const taskPoints=taskData[catName]?.[i]?.points||1;
+    if(t.checked){completed++; points+=taskPoints;}
+  });
+  const percent = tasks.length?(completed/tasks.length*100):0;
+  catDiv.querySelector(".progress-bar").style.width=percent+"%";
+  catDiv.querySelector(".points-val").innerText=points;
+
+  // Update streak
+  let streak = Number(localStorage.getItem(`${catName}-streak`)) || 0;
+  if(percent===100) streak++; else streak=0;
+  localStorage.setItem(`${catName}-streak`,streak);
+  catDiv.querySelector(".streak-val").innerText=streak;
+
+  // Update badges
+  const badgesDiv = document.getElementById(`${catName}-badges`);
+  badgesDiv.innerHTML="";
+  if(streak>=7) badgesDiv.innerHTML+="🏅 7-day streak! ";
+  if(streak>=30) badgesDiv.innerHTML+="🎖 30-day streak! ";
+  if(streak>=60) badgesDiv.innerHTML+="🏆 60-day streak! ";
+
+  // Update XP
+  let xp = Number(localStorage.getItem(`${catName}-xp`)) || 0;
+  xp = points + (streak*2);
+  localStorage.setItem(`${catName}-xp`,xp);
+  catDiv.querySelector(".xp-val").innerText=xp;
+
+  updateTotalPoints();
+}
+
+// ----- Update Total Points & XP -----
+function updateTotalPoints(){
+  let total=0, totalXP=0;
+  document.querySelectorAll(".category").forEach(catDiv=>{
+    total+=Number(catDiv.querySelector(".points-val").innerText);
+    totalXP+=Number(catDiv.querySelector(".xp-val").innerText);
+  });
+  document.getElementById("total-points").innerText=total;
+  document.getElementById("total-xp").innerText=totalXP;
+}
+
+// ----- Charts -----
+let weeklyChart=null, categoryChart=null;
+function updateCharts(){
+  const categories=["Physical","Mental","Wealth","Personal"];
+  const catPoints = categories.map(c=>Number(document.querySelector(`.category[data-category='${c}'] .points-val`).innerText));
+  if(!categoryChart){
+    const ctx=document.getElementById('categoryChart').getContext('2d');
+    categoryChart = new Chart(ctx,{type:'bar',data:{labels:categories,datasets:[{label:'Points',data:catPoints,backgroundColor:'#ffd000'}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+  } else { categoryChart.data.datasets[0].data=catPoints; categoryChart.update(); }
+  if(!weeklyChart){
+    const ctx=document.getElementById('weeklyChart').getContext('2d');
+    weeklyChart = new Chart(ctx,{type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{label:'Daily Points',data:[0,0,0,0,0,0,0],borderColor:'#ffd000',fill:false}]},options:{scales:{y:{beginAtZero:true}}}});
+  }
+}
+
+// ----- Motivational Quotes -----
+function rotateQuote(){
+  const q = quotes[Math.floor(Math.random()*quotes.length)];
+  document.getElementById("quote").innerText=q;
+}
+rotateQuote();
+setInterval(rotateQuote, 10000);
+
+//
