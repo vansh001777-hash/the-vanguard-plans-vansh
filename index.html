@@ -1,160 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>60-Day Planner</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>The Vanguard — 60 Day Planner</title>
 <style>
+  :root {
+    --bg: #0b0b0c;
+    --card: #0f1113;
+    --accent: #ffd000;
+    --muted: #bfc6c9;
+    --accent2: #00e6c3;
+  }
   body {
-    background: #0b0b0c;
-    color: #fff;
-    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    background: linear-gradient(180deg, #050506 0%, #0b0b0c 100%);
+    color: #e6eef1;
   }
-  h1 {
-    text-align: center;
-    color: #ffd000;
-    margin-bottom: 20px;
-  }
-  .progress-container {
-    width: 100%;
-    background: #222;
-    border-radius: 20px;
+  .container {
+    max-width: 980px;
     margin: 20px auto;
-    height: 20px;
-    overflow: hidden;
+    padding: 18px;
   }
-  .progress-bar {
-    height: 100%;
-    background: #ffd000;
-    width: 0%;
-    transition: width 0.3s;
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
   }
-  details {
-    margin: 15px 0;
-    background: #111;
-    border-radius: 12px;
-    padding: 10px 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
   }
-  summary {
-    font-size: 1.2em;
-    color: #ffd000;
-    cursor: pointer;
-    outline: none;
+  .day-selector {
+    margin-bottom: 20px;
+    text-align: center;
   }
-  .day-card {
-    background: #1a1a1d;
+  .day-selector select {
+    padding: 8px 12px;
+    font-size: 1rem;
     border-radius: 8px;
-    padding: 10px;
-    margin: 10px 0;
+    border: none;
+    background: var(--card);
+    color: var(--accent);
   }
-  .day-card h3 {
-    margin: 0 0 8px 0;
-    color: #ffd000;
+  .card {
+    background: var(--card);
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5);
   }
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .task {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
   }
-  li {
-    margin: 6px 0;
-  }
-  input[type="checkbox"] {
+  .task input {
     margin-right: 10px;
+    transform: scale(1.2);
+  }
+  .task label {
+    font-size: 1rem;
+    color: var(--muted);
   }
 </style>
 </head>
 <body>
-
-<h1>Vanguard — 60 Day Planner</h1>
-
-<div class="progress-container">
-  <div class="progress-bar" id="progress-bar"></div>
-</div>
-<p id="progress-text" style="text-align:center;"></p>
-
-<div id="plan-container"></div>
+  <div class="container">
+    <header>
+      <h1>The Vanguard — 60 Day Planner</h1>
+    </header>
+    <div class="day-selector">
+      <label for="daySelect">Select Day: </label>
+      <select id="daySelect"></select>
+    </div>
+    <div id="plan"></div>
+  </div>
 
 <script>
-const maxDays = 60;
-const daysPerWeek = 7;
-const container = document.getElementById("plan-container");
-const progressBar = document.getElementById("progress-bar");
-const progressText = document.getElementById("progress-text");
+  // Fixed start date for everyone
+  const startDate = new Date("2025-09-07"); // Day 0
+  const totalDays = 60;
 
-// Load saved checkbox states
-function loadState() {
-  return JSON.parse(localStorage.getItem("plannerState") || "{}");
-}
-
-// Save checkbox states
-function saveState(state) {
-  localStorage.setItem("plannerState", JSON.stringify(state));
-}
-
-// Update progress bar
-function updateProgress() {
-  const total = document.querySelectorAll("input[type=checkbox]").length;
-  const checked = document.querySelectorAll("input[type=checkbox]:checked").length;
-  const percent = Math.round((checked / total) * 100);
-  progressBar.style.width = percent + "%";
-  progressText.textContent = `${checked} / ${total} tasks completed (${percent}%)`;
-}
-
-const state = loadState();
-
-// Intro Day 0
-const intro = document.createElement("details");
-intro.open = true;
-intro.innerHTML = `
-  <summary>Day 0 — Introduction</summary>
-  <div class="day-card">
-    <h3>Day 0 — Intro</h3>
-    <ul>
-      <li><input type="checkbox" data-id="0-1"> Set your mindset for success</li>
-      <li><input type="checkbox" data-id="0-2"> Prepare your environment</li>
-      <li><input type="checkbox" data-id="0-3"> Review the 60-day plan</li>
-    </ul>
-  </div>`;
-container.appendChild(intro);
-
-// Weeks
-let dayCounter = 1;
-for (let w = 1; w <= Math.ceil(maxDays / daysPerWeek); w++) {
-  const week = document.createElement("details");
-  week.innerHTML = `<summary>Week ${w}</summary>`;
-
-  for (let d = 1; d <= daysPerWeek && dayCounter <= maxDays; d++) {
-    const dayCard = document.createElement("div");
-    dayCard.className = "day-card";
-    dayCard.innerHTML = `
-      <h3>Day ${dayCounter}</h3>
-      <ul>
-        <li><input type="checkbox" data-id="${dayCounter}-1"> Task 1 for Day ${dayCounter}</li>
-        <li><input type="checkbox" data-id="${dayCounter}-2"> Task 2 for Day ${dayCounter}</li>
-        <li><input type="checkbox" data-id="${dayCounter}-3"> Task 3 for Day ${dayCounter}</li>
-      </ul>`;
-    week.appendChild(dayCard);
-    dayCounter++;
+  // Pre-fill 60 days with placeholder tasks
+  const dailyPlans = {};
+  for (let i = 0; i <= totalDays; i++) {
+    dailyPlans[i] = [
+      `Main Task for Day ${i}`,
+      `Workout/Study Goal for Day ${i}`,
+      `Reflection/Journal for Day ${i}`
+    ];
   }
-  container.appendChild(week);
-}
 
-// Restore checkbox states
-document.querySelectorAll("input[type=checkbox]").forEach(cb => {
-  if (state[cb.dataset.id]) cb.checked = true;
-  cb.addEventListener("change", () => {
-    state[cb.dataset.id] = cb.checked;
-    saveState(state);
-    updateProgress();
+  // Calculate current day based on today's date
+  function getCurrentDay() {
+    const today = new Date();
+    const diff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+    return diff >= 0 ? diff : 0;
+  }
+
+  // Populate dropdown
+  const daySelect = document.getElementById("daySelect");
+  const currentDay = getCurrentDay();
+  for (let i = 0; i <= totalDays; i++) {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `Day ${i}`;
+    if (i === currentDay) opt.selected = true;
+    if (i > currentDay) opt.disabled = true; // Lock future days
+    daySelect.appendChild(opt);
+  }
+
+  // Render plan for selected day
+  function renderPlan(day) {
+    const planDiv = document.getElementById("plan");
+    planDiv.innerHTML = "";
+    const tasks = dailyPlans[day] || ["No tasks added yet."];
+    tasks.forEach((task, idx) => {
+      const card = document.createElement("div");
+      card.className = "card task";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = `task-${day}-${idx}`;
+      checkbox.checked = localStorage.getItem(checkbox.id) === "true";
+      checkbox.onchange = () => {
+        localStorage.setItem(checkbox.id, checkbox.checked);
+      };
+      const label = document.createElement("label");
+      label.setAttribute("for", checkbox.id);
+      label.textContent = task;
+      card.appendChild(checkbox);
+      card.appendChild(label);
+      planDiv.appendChild(card);
+    });
+  }
+
+  // Initial render
+  renderPlan(currentDay);
+
+  // Handle day change
+  daySelect.addEventListener("change", e => {
+    renderPlan(parseInt(e.target.value));
   });
-});
-
-updateProgress();
 </script>
-
 </body>
 </html>
